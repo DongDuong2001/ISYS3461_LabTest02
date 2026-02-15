@@ -5,7 +5,7 @@ function DeleteConfirmDialog({ tour, onConfirm, onCancel }) {
         <h3 className="text-lg font-bold mb-4">Confirm Delete</h3>
         <p className="mb-6">
           Are you sure you want to delete tour <strong>{tour.name}</strong> with
-          ID <strong>{tour._id}</strong>?
+          ID <strong>{tour.id}</strong>?
         </p>
         <div className="flex justify-end gap-3">
           <button

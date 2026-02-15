@@ -16,7 +16,7 @@ function Cart({ cart, onIncrease, onDecrease, onEmpty }) {
           <div className="space-y-3 mb-4">
             {cart.map((item) => (
               <div
-                key={item._id}
+                key={item.id}
                 className="flex items-center justify-between border-b pb-2"
               >
                 <div className="flex-1">
@@ -27,7 +27,7 @@ function Cart({ cart, onIncrease, onDecrease, onEmpty }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => onDecrease(item._id)}
+                    onClick={() => onDecrease(item.id)}
                     className="bg-gray-200 text-gray-800 w-7 h-7 rounded hover:bg-gray-300 cursor-pointer text-sm"
                   >
                     -
@@ -36,7 +36,7 @@ function Cart({ cart, onIncrease, onDecrease, onEmpty }) {
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() => onIncrease(item._id)}
+                    onClick={() => onIncrease(item.id)}
                     className="bg-gray-200 text-gray-800 w-7 h-7 rounded hover:bg-gray-300 cursor-pointer text-sm"
                   >
                     +

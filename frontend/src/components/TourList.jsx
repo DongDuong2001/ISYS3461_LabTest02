@@ -24,14 +24,14 @@ function TourList({ tours, onDelete, onUpdate, onBook }) {
         </thead>
         <tbody>
           {tours.map((tour) => (
-            <tr key={tour._id} className="border-b hover:bg-gray-50">
-              <td className="p-2 text-sm text-gray-600">{tour._id}</td>
+            <tr key={tour.id} className="border-b hover:bg-gray-50">
+              <td className="p-2 text-sm text-gray-600">{tour.id}</td>
               <td className="p-2">{tour.name}</td>
               <td className="p-2">${tour.price}</td>
               <td className="p-2">
                 {tour.company ? (
                   <Link
-                    to={`/companies/${tour.company._id}`}
+                    to={`/companies/${tour.company.id}`}
                     className="text-blue-500 hover:underline"
                   >
                     {tour.company.name}

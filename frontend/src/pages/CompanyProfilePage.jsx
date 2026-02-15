@@ -83,8 +83,8 @@ function CompanyProfilePage() {
             </thead>
             <tbody>
               {tours.map((tour) => (
-                <tr key={tour._id} className="border-b">
-                  <td className="p-2 text-sm text-gray-600">{tour._id}</td>
+                <tr key={tour.id} className="border-b">
+                  <td className="p-2 text-sm text-gray-600">{tour.id}</td>
                   <td className="p-2">{tour.name}</td>
                   <td className="p-2">${tour.price}</td>
                 </tr>

@@ -5,7 +5,7 @@ import API from "../config/api";
 function UpdateTourDialog({ tour, onSubmit, onCancel }) {
   const [name, setName] = useState(tour.name);
   const [price, setPrice] = useState(tour.price);
-  const [companyId, setCompanyId] = useState(tour.company?._id || "");
+  const [companyId, setCompanyId] = useState(tour.company?.id || "");
   const [companies, setCompanies] = useState([]);
   const [errors, setErrors] = useState({});
 
@@ -49,7 +49,7 @@ function UpdateTourDialog({ tour, onSubmit, onCancel }) {
       } else {
         tourData.company = null;
       }
-      await axios.put(`${API.TOURS}/${tour._id}`, tourData);
+      await axios.put(`${API.TOURS}/${tour.id}`, tourData);
       onSubmit();
     } catch (error) {
       if (error.response?.data?.errors) {
@@ -68,7 +68,7 @@ function UpdateTourDialog({ tour, onSubmit, onCancel }) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
         <h3 className="text-lg font-bold mb-4">
-          Update Tour (ID: {tour._id})
+          Update Tour (ID: {tour.id})
         </h3>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
@@ -108,7 +108,7 @@ function UpdateTourDialog({ tour, onSubmit, onCancel }) {
             >
               <option value="">No Company</option>
               {companies.map((c) => (
-                <option key={c._id} value={c._id}>
+                <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
               ))}

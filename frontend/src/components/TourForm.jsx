@@ -106,7 +106,7 @@ function TourForm({ onTourCreated }) {
           >
             <option value="">Select Company (optional)</option>
             {companies.map((c) => (
-              <option key={c._id} value={c._id}>
+              <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}

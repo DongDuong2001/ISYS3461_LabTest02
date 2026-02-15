@@ -57,7 +57,7 @@ function TourPage() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${API.TOURS}/${tourToDelete._id}`);
+      await axios.delete(`${API.TOURS}/${tourToDelete.id}`);
       setShowDeleteDialog(false);
       setTourToDelete(null);
       fetchTours(1);
@@ -91,10 +91,10 @@ function TourPage() {
   // CART handlers
   const handleBookTicket = (tour) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item._id === tour._id);
+      const existing = prev.find((item) => item.id === tour.id);
       if (existing) {
         return prev.map((item) =>
-          item._id === tour._id
+          item.id === tour.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -106,7 +106,7 @@ function TourPage() {
   const handleIncreaseQty = (tourId) => {
     setCart((prev) =>
       prev.map((item) =>
-        item._id === tourId ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === tourId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
@@ -115,7 +115,7 @@ function TourPage() {
     setCart((prev) =>
       prev
         .map((item) =>
-          item._id === tourId ? { ...item, quantity: item.quantity - 1 } : item
+          item.id === tourId ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
