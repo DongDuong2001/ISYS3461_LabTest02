@@ -1,10 +1,10 @@
-// Global Config for Backend URLs
-const BASE_URL = "http://localhost:8080";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:10000";
 
-const API = {
-  TOURS: `${BASE_URL}/tours`,
-  COMPANIES: `${BASE_URL}/companies`,
-  COMPANIES_DROPDOWN: `${BASE_URL}/companies/dropdown`,
+export const API_ROUTES = {
+  tours: "/tours",
+  companies: "/companies",
+  companyDropdown: "/companies/dropdown",
 };
 
-export default API;
+export const TOUR_PAGE_SIZE = 5;

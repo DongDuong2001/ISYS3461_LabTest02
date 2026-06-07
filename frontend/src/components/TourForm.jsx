@@ -1,125 +1,106 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import API from "../config/api";
+import useTourForm from "../features/tours/hooks/useTourForm.js";
 
 function TourForm({ onTourCreated }) {
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [companyId, setCompanyId] = useState("");
-  const [companies, setCompanies] = useState([]);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const res = await axios.get(API.COMPANIES_DROPDOWN);
-        setCompanies(res.data);
-      } catch (error) {
-        console.error("Error fetching companies:", error);
-      }
-    };
-    fetchCompanies();
-  }, []);
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!name.trim()) {
-      newErrors.name = "Tour name is required";
-    }
-    if (!price && price !== 0) {
-      newErrors.price = "Tour price is required";
-    } else if (Number(price) <= 0) {
-      newErrors.price = "Price must be larger than 0";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      const tourData = {
-        name: name.trim(),
-        price: Number(price),
-      };
-      if (companyId) {
-        tourData.company = companyId;
-      }
-      await axios.post(API.TOURS, tourData);
-      setName("");
-      setPrice("");
-      setCompanyId("");
-      setErrors({});
-      onTourCreated();
-    } catch (error) {
-      if (error.response?.data?.errors) {
-        const serverErrors = {};
-        error.response.data.errors.forEach((err) => {
-          serverErrors[err.field] = err.message;
-        });
-        setErrors(serverErrors);
-      } else {
-        console.error("Error creating tour:", error);
-      }
-    }
-  };
+  const {
+    values,
+    companies,
+    errors,
+    submitting,
+    setField,
+    submit,
+  } = useTourForm({ onSuccess: onTourCreated });
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-4">Add New Tour</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <section className="bg-white p-6 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      <h2 className="text-2xl font-black mb-4 text-black uppercase">
+        Add Tour
+      </h2>
+      <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
         <div>
+          <label htmlFor="create-tour-name" className="font-black uppercase">
+            Name
+          </label>
           <input
+            id="create-tour-name"
             type="text"
-            placeholder="Tour Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={`w-full border p-2 rounded ${
-              errors.name ? "border-red-500" : "border-gray-300"
+            value={values.name}
+            onChange={(event) => setField("name", event.target.value)}
+            aria-invalid={Boolean(errors.name)}
+            className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+              errors.name ? "bg-red-200" : "bg-white focus:bg-yellow-100"
             }`}
           />
           {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            <p className="text-red-700 text-sm mt-2 font-black">
+              {errors.name}
+            </p>
           )}
         </div>
+
         <div>
+          <label htmlFor="create-tour-price" className="font-black uppercase">
+            Price (USD)
+          </label>
           <input
+            id="create-tour-price"
             type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className={`w-full border p-2 rounded ${
-              errors.price ? "border-red-500" : "border-gray-300"
+            min="1"
+            value={values.price}
+            onChange={(event) => setField("price", event.target.value)}
+            aria-invalid={Boolean(errors.price)}
+            className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+              errors.price ? "bg-red-200" : "bg-white focus:bg-yellow-100"
             }`}
           />
           {errors.price && (
-            <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            <p className="text-red-700 text-sm mt-2 font-black">
+              {errors.price}
+            </p>
           )}
         </div>
+
         <div>
+          <label htmlFor="create-tour-company" className="font-black uppercase">
+            Operating Company
+          </label>
           <select
-            value={companyId}
-            onChange={(e) => setCompanyId(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded"
+            id="create-tour-company"
+            value={values.companyId}
+            onChange={(event) => setField("companyId", event.target.value)}
+            aria-invalid={Boolean(errors.companyId)}
+            className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+              errors.companyId ? "bg-red-200" : "bg-white focus:bg-yellow-100"
+            }`}
           >
-            <option value="">Select Company (optional)</option>
-            {companies.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+            <option value="">Select a company</option>
+            {companies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
               </option>
             ))}
           </select>
+          {errors.companyId && (
+            <p className="text-red-700 text-sm mt-2 font-black">
+              {errors.companyId}
+            </p>
+          )}
         </div>
+
+        {errors.form && (
+          <p className="border-4 border-red-700 bg-red-100 p-3 font-black text-red-800">
+            {errors.form}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
+          disabled={submitting}
+          className="bg-lime-400 text-black px-6 py-3 border-4 border-black font-black uppercase hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-60 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          Add Tour
+          {submitting ? "Creating..." : "Create Tour"}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
 

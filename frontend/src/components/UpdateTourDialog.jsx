@@ -1,132 +1,124 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import API from "../config/api";
+import useTourForm from "../features/tours/hooks/useTourForm.js";
 
 function UpdateTourDialog({ tour, onSubmit, onCancel }) {
-  const [name, setName] = useState(tour.name);
-  const [price, setPrice] = useState(tour.price);
-  const [companyId, setCompanyId] = useState(tour.company?.id || "");
-  const [companies, setCompanies] = useState([]);
-  const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const res = await axios.get(API.COMPANIES_DROPDOWN);
-        setCompanies(res.data);
-      } catch (error) {
-        console.error("Error fetching companies:", error);
-      }
-    };
-    fetchCompanies();
-  }, []);
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!name.trim()) {
-      newErrors.name = "Tour name is required";
-    }
-    if (!price && price !== 0) {
-      newErrors.price = "Tour price is required";
-    } else if (Number(price) <= 0) {
-      newErrors.price = "Price must be larger than 0";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      const tourData = {
-        name: name.trim(),
-        price: Number(price),
-      };
-      if (companyId) {
-        tourData.company = companyId;
-      } else {
-        tourData.company = null;
-      }
-      await axios.put(`${API.TOURS}/${tour.id}`, tourData);
-      onSubmit();
-    } catch (error) {
-      if (error.response?.data?.errors) {
-        const serverErrors = {};
-        error.response.data.errors.forEach((err) => {
-          serverErrors[err.field] = err.message;
-        });
-        setErrors(serverErrors);
-      } else {
-        console.error("Error updating tour:", error);
-      }
-    }
-  };
+  const {
+    values,
+    companies,
+    errors,
+    submitting,
+    setField,
+    submit,
+  } = useTourForm({ tour, onSuccess: onSubmit });
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-        <h3 className="text-lg font-bold mb-4">
-          Update Tour (ID: {tour.id})
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="update-tour-title"
+    >
+      <div className="bg-white p-8 max-w-md w-full mx-4 border-4 border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+        <h3
+          id="update-tour-title"
+          className="text-3xl font-black mb-6 text-black uppercase"
+        >
+          Update Tour #{tour.id}
         </h3>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+
+        <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label htmlFor="update-tour-name" className="font-black uppercase">
+              Name
+            </label>
             <input
+              id="update-tour-name"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`w-full border p-2 rounded ${
-                errors.name ? "border-red-500" : "border-gray-300"
+              value={values.name}
+              onChange={(event) => setField("name", event.target.value)}
+              aria-invalid={Boolean(errors.name)}
+              className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+                errors.name ? "bg-red-200" : "bg-white focus:bg-yellow-100"
               }`}
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              <p className="text-red-700 text-sm mt-2 font-black">
+                {errors.name}
+              </p>
             )}
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1">Price</label>
+            <label htmlFor="update-tour-price" className="font-black uppercase">
+              Price (USD)
+            </label>
             <input
+              id="update-tour-price"
               type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className={`w-full border p-2 rounded ${
-                errors.price ? "border-red-500" : "border-gray-300"
+              min="1"
+              value={values.price}
+              onChange={(event) => setField("price", event.target.value)}
+              aria-invalid={Boolean(errors.price)}
+              className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+                errors.price ? "bg-red-200" : "bg-white focus:bg-yellow-100"
               }`}
             />
             {errors.price && (
-              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+              <p className="text-red-700 text-sm mt-2 font-black">
+                {errors.price}
+              </p>
             )}
           </div>
+
           <div>
-            <label className="block text-sm font-medium mb-1">Company</label>
-            <select
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded"
+            <label
+              htmlFor="update-tour-company"
+              className="font-black uppercase"
             >
-              <option value="">No Company</option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
+              Operating Company
+            </label>
+            <select
+              id="update-tour-company"
+              value={values.companyId}
+              onChange={(event) => setField("companyId", event.target.value)}
+              aria-invalid={Boolean(errors.companyId)}
+              className={`mt-1 w-full border-4 border-black p-3 font-bold focus:outline-none ${
+                errors.companyId ? "bg-red-200" : "bg-white focus:bg-yellow-100"
+              }`}
+            >
+              <option value="">Select a company</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
                 </option>
               ))}
             </select>
+            {errors.companyId && (
+              <p className="text-red-700 text-sm mt-2 font-black">
+                {errors.companyId}
+              </p>
+            )}
           </div>
-          <div className="flex justify-end gap-3 mt-2">
+
+          {errors.form && (
+            <p className="border-4 border-red-700 bg-red-100 p-3 font-black text-red-800">
+              {errors.form}
+            </p>
+          )}
+
+          <div className="flex gap-3 mt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
+              className="flex-1 bg-gray-300 px-6 py-3 border-4 border-black font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 cursor-pointer"
+              disabled={submitting}
+              className="flex-1 bg-lime-400 px-6 py-3 border-4 border-black font-black uppercase disabled:opacity-60 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
-              Update
+              {submitting ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
