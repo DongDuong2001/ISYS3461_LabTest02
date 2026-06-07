@@ -1,5 +1,13 @@
 # WonderTour Lab Test 02 - Reference Solution
 
+[Tiếng Việt](README.md) |
+[English](docs/i18n/README.en.md) |
+[हिन्दी](docs/i18n/README.hi.md) |
+[한국어](docs/i18n/README.ko.md) |
+[简体中文](docs/i18n/README.zh-CN.md) |
+[日本語](docs/i18n/README.ja.md) |
+[繁體中文（台灣）](docs/i18n/README.zh-TW.md)
+
 > [!CAUTION]
 > Đây là **solution tham khảo được hoàn thiện lại sau bài Lab Test**, không phải
 > đáp án chính thức của RMIT hay giảng viên. Cách diễn giải rubric, kiến trúc và
