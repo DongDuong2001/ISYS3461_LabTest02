@@ -1,13 +1,17 @@
 server:
-  port: 8080
+  port: 10000
 
 spring:
+  application:
+    name: api-gateway
   cloud:
     gateway:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins:
+              - "${FRONTEND_ORIGIN:http://localhost:3000}"
+              - "${FRONTEND_IP_ORIGIN:http://127.0.0.1:3000}"
             allowedMethods:
               - GET
               - POST
@@ -18,10 +22,18 @@ spring:
             allowCredentials: true
       routes:
         - id: tour-service
-          uri: http://localhost:8081
+          uri: lb://tour-service
           predicates:
             - Path=/tours/**
         - id: company-service
-          uri: http://localhost:8082
+          uri: lb://company-service
           predicates:
             - Path=/companies/**
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

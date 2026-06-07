@@ -17,5 +17,6 @@ public class TourRequest {
     @Min(value = 1, message = "Price must be larger than 0")
     private Integer price;
 
+    @NotNull(message = "Operating company is required")
     private Long companyId;
 }

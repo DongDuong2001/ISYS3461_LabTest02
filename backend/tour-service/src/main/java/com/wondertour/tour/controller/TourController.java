@@ -4,9 +4,12 @@ import com.wondertour.tour.dto.TourPageResponse;
 import com.wondertour.tour.dto.TourRequest;
 import com.wondertour.tour.dto.TourResponse;
 import com.wondertour.tour.service.TourService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/tours")
-@CrossOrigin(origins = "http://localhost:3000")
+@Validated
 public class TourController {
 
     private final TourService tourService;
@@ -23,11 +26,10 @@ public class TourController {
         this.tourService = tourService;
     }
 
-    // GET /tours - with optional pagination and companyId filter
     @GetMapping
     public ResponseEntity<?> getTours(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer limit,
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "5") @Min(1) @Max(50) int limit,
             @RequestParam(required = false) Long companyId) {
 
         if (companyId != null) {
@@ -35,30 +37,22 @@ public class TourController {
             return ResponseEntity.ok(tours);
         }
 
-        if (page != null && limit != null) {
-            TourPageResponse response = tourService.getToursPaginated(page, limit);
-            return ResponseEntity.ok(response);
-        }
-
-        List<TourResponse> tours = tourService.getAllTours();
-        return ResponseEntity.ok(tours);
+        TourPageResponse response = tourService.getToursPaginated(page, limit);
+        return ResponseEntity.ok(response);
     }
 
-    // GET /tours/:id
     @GetMapping("/{id}")
     public ResponseEntity<TourResponse> getTourById(@PathVariable Long id) {
         TourResponse tour = tourService.getTourById(id);
         return ResponseEntity.ok(tour);
     }
 
-    // POST /tours
     @PostMapping
     public ResponseEntity<TourResponse> createTour(@Valid @RequestBody TourRequest request) {
         TourResponse tour = tourService.createTour(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(tour);
     }
 
-    // PUT /tours/:id
     @PutMapping("/{id}")
     public ResponseEntity<TourResponse> updateTour(
             @PathVariable Long id,
@@ -67,7 +61,6 @@ public class TourController {
         return ResponseEntity.ok(tour);
     }
 
-    // DELETE /tours/:id
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteTour(@PathVariable Long id) {
         tourService.deleteTour(id);

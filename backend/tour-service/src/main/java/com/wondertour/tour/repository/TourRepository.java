@@ -10,6 +10,5 @@ import java.util.List;
 
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
-    List<Tour> findByCompanyId(Long companyId);
-    Page<Tour> findAll(Pageable pageable);
+    List<Tour> findByCompanyIdOrderByIdAsc(Long companyId);
 }
